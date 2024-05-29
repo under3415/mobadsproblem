@@ -1,0 +1,33 @@
+pluginManagement {
+    def flutterSdkPath = {
+        def properties = new Properties()
+        file("local.properties").withInputStream { properties.load(it) }
+        def flutterSdkPath = properties.getProperty("flutter.sdk")
+        assert flutterSdkPath != null, "flutter.sdk not set in local.properties"
+        return flutterSdkPath
+    }
+    settings.ext.flutterSdkPath = flutterSdkPath()
+
+    includeBuild("${settings.ext.flutterSdkPath}/packages/flutter_tools/gradle")
+
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+plugins {
+    id "dev.flutter.flutter-plugin-loader" version "1.0.0"
+    //https://developer.android.com/build/releases/gradle-plugin
+    //id "com.android.application" version "7.4.2" apply false
+    id "com.android.application" version "8.4.0" apply false //cannot upgrade because of ad_services issue. wait for google_mobile_ads upgrade
+    id "org.jetbrains.kotlin.android" version "1.9.23" apply false
+    //https://developers.google.com/android/guides/google-services-plugin
+    //id "com.google.gms.google-services" version "4.4.1" apply false
+    //https://mvnrepository.com/artifact/com.google.firebase/firebase-crashlytics-gradle
+    //id "com.google.firebase.crashlytics" version "2.9.9" apply false //cannot upgrade to 3 because of AGP8 issue with ad config
+}
+
+include ":app"
+

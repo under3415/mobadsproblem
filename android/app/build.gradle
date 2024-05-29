@@ -1,0 +1,129 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+    //id 'com.google.gms.google-services'
+    //id "com.google.firebase.crashlytics"
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+    flutterVersionCode = '1'
+}
+
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '1.0'
+}
+
+
+
+
+
+
+
+
+android {
+    namespace 'com.example.test'
+    
+    compileSdkVersion localProperties.getProperty('flutter.compileSdkVersion').toInteger()
+	ndkVersion localProperties.getProperty('flutter.ndkVersion')
+    buildToolsVersion localProperties.getProperty('flutter.buildToolsVersion')
+
+    defaultConfig {
+        //Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        applicationId 'com.example.test'
+        // You can update the following values to match your application needs.
+        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
+        
+    
+        minSdkVersion localProperties.getProperty('flutter.minSdkVersion').toInteger()
+	    targetSdkVersion localProperties.getProperty('flutter.targetSdkVersion').toInteger()
+
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+
+        //added due to build error after excluding x86
+        multiDexEnabled = true
+
+
+    }
+    
+    compileOptions {
+
+        // Flag to enable support for the new language APIs
+        //added from https://developer.android.com/studio/write/java8-support.html
+        coreLibraryDesugaringEnabled = true
+
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+
+         
+    }
+
+    
+    kotlin {
+        jvmToolchain(17)
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    
+   
+    buildTypes {
+        debug {
+            //this is needed to fix issues with running in debug mode
+            minifyEnabled true                    
+        }
+        release {
+            
+            ndk {
+                abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86_64' //, 'armeabi'  //, 'x86'
+            }
+
+            
+
+            // Enables code shrinking, obfuscation, and optimization for only
+            // your project's release build type. Make sure to use a build
+            // variant with `debuggable false`.
+            minifyEnabled true
+
+            // Enables resource shrinking, which is performed by the
+            // Android Gradle plugin.
+            shrinkResources true
+
+            // Includes the default ProGuard rules files that are packaged with
+            // the Android Gradle plugin. To learn more, go to the section about
+            // R8 configuration files.
+            proguardFiles getDefaultProguardFile(
+                    'proguard-android-optimize.txt'),
+                    'proguard-rules.pro'
+            
+           
+           
+        }
+    }
+}
+
+flutter {
+    source '../..'
+}
+
+dependencies {
+    //implementation platform('com.google.firebase:firebase-bom:33.0.0') //https://firebase.google.com/support/release-notes/android
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
+    
+
+
+}
